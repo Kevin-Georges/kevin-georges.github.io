@@ -1,69 +1,118 @@
-// ---- Circuit-pattern generator ----
-// Draws a "chip floorplan" — recursive rectangle subdivisions with thin borders,
-// occasional accent fills, used as the banner and card backgrounds.
+// ---- Neural-network visualization ----
+// Layered nodes connected by edges. Edge stroke width = |weight|,
+// color = sign (green positive, pink negative). Seeded per-canvas.
 
-function drawCircuit(canvas, opts = {}) {
+function drawNetwork(canvas, opts = {}) {
   const ctx = canvas.getContext("2d");
   const dpr = window.devicePixelRatio || 1;
   const w = canvas.clientWidth;
   const h = canvas.clientHeight;
+  if (w === 0 || h === 0) return;
   canvas.width = w * dpr;
   canvas.height = h * dpr;
   ctx.scale(dpr, dpr);
 
   const {
     bg = "#1d1530",
-    line = "#5a3f88",
-    accents = ["#b765d4", "#6ce078", "#f59f3a", "#7ad3f0", "#f5d24d"],
-    minSize = 12,
-    maxDepth = 6,
-    accentRate = 0.06,
+    layers = [4, 6, 6, 4],
+    posColor = "108, 224, 120",   // green rgb
+    negColor = "224, 112, 200",   // pink rgb
+    nodeColor = "#f5d24d",
+    nodeStroke = "#1d1530",
+    showWeights = false,
+    padX = 24,
+    padY = 18,
     seed = Math.random() * 1e9,
   } = opts;
 
-  // Seeded PRNG so each canvas is stable per-load
-  let s = seed >>> 0;
+  // Seeded PRNG (LCG) — stable across redraws
+  let s = (seed >>> 0) || 1;
   const rand = () => {
     s = (s * 1664525 + 1013904223) >>> 0;
     return s / 0xffffffff;
   };
+  // Gaussian-ish for weights (Box-Muller)
+  const gauss = () => {
+    const u = Math.max(rand(), 1e-9);
+    const v = rand();
+    return Math.sqrt(-2 * Math.log(u)) * Math.cos(2 * Math.PI * v);
+  };
 
   ctx.fillStyle = bg;
   ctx.fillRect(0, 0, w, h);
-  ctx.lineWidth = 1;
-  ctx.strokeStyle = line;
 
-  function split(x, y, cw, ch, depth) {
-    ctx.strokeRect(x + 0.5, y + 0.5, cw - 1, ch - 1);
-    if (depth <= 0 || cw < minSize * 2 || ch < minSize * 2) {
-      if (rand() < accentRate) {
-        ctx.fillStyle = accents[Math.floor(rand() * accents.length)];
-        ctx.globalAlpha = 0.35 + rand() * 0.4;
-        ctx.fillRect(x + 1.5, y + 1.5, cw - 3, ch - 3);
-        ctx.globalAlpha = 1;
+  // Layout: equally-spaced layers in X, nodes vertically centered
+  const innerW = Math.max(w - padX * 2, 1);
+  const innerH = Math.max(h - padY * 2, 1);
+  const positions = layers.map((count, li) => {
+    const x = layers.length === 1 ? w / 2 : padX + (innerW * li) / (layers.length - 1);
+    const gap = innerH / (count + 1);
+    return Array.from({ length: count }, (_, i) => ({
+      x,
+      y: padY + gap * (i + 1)
+    }));
+  });
+
+  // Edges (drawn first so nodes sit on top)
+  const nodeR = Math.max(2.2, Math.min(innerH / 18, 5.5));
+  for (let li = 0; li < positions.length - 1; li++) {
+    const A = positions[li];
+    const B = positions[li + 1];
+    for (const a of A) {
+      for (const b of B) {
+        const wgt = gauss();        // ~N(0,1)
+        const mag = Math.min(Math.abs(wgt), 2.5) / 2.5; // 0..1
+        const rgb = wgt >= 0 ? posColor : negColor;
+        ctx.strokeStyle = `rgba(${rgb}, ${0.15 + mag * 0.65})`;
+        ctx.lineWidth = 0.4 + mag * 1.6;
+        ctx.beginPath();
+        ctx.moveTo(a.x, a.y);
+        ctx.lineTo(b.x, b.y);
+        ctx.stroke();
+
+        if (showWeights && mag > 0.55) {
+          ctx.fillStyle = `rgba(${rgb}, 0.85)`;
+          ctx.font = '9px "JetBrains Mono", monospace';
+          const mx = (a.x + b.x) / 2;
+          const my = (a.y + b.y) / 2;
+          ctx.fillText(wgt.toFixed(2), mx + 2, my - 2);
+        }
       }
-      return;
-    }
-    const horizontal = cw < ch ? rand() < 0.3 : rand() < 0.7;
-    const t = 0.3 + rand() * 0.4;
-    if (horizontal) {
-      const cut = Math.floor(cw * t);
-      split(x, y, cut, ch, depth - 1);
-      split(x + cut, y, cw - cut, ch, depth - 1);
-    } else {
-      const cut = Math.floor(ch * t);
-      split(x, y, cw, cut, depth - 1);
-      split(x, y + cut, cw, ch - cut, depth - 1);
     }
   }
 
-  split(0, 0, w, h, maxDepth);
+  // Nodes
+  for (const layer of positions) {
+    for (const n of layer) {
+      ctx.beginPath();
+      ctx.arc(n.x, n.y, nodeR, 0, Math.PI * 2);
+      ctx.fillStyle = nodeColor;
+      ctx.fill();
+      ctx.lineWidth = 1.2;
+      ctx.strokeStyle = nodeStroke;
+      ctx.stroke();
+    }
+  }
 }
 
 function paintBanner() {
   const c = document.getElementById("banner-canvas");
-  if (c) drawCircuit(c, { maxDepth: 7, minSize: 14, accentRate: 0.05, seed: 42 });
+  if (c) drawNetwork(c, {
+    layers: [5, 9, 9, 9, 5],
+    showWeights: true,
+    padX: 40,
+    padY: 28,
+    seed: 42,
+  });
 }
+
+// Back-compat alias for the timeline renderer below
+const drawCircuit = (canvas, opts = {}) => drawNetwork(canvas, {
+  layers: [3, 5, 4],
+  padX: 14,
+  padY: 12,
+  ...opts,
+});
 
 // ---- Timeline data ----
 const timeline = [
