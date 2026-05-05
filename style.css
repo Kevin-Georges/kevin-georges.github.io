@@ -37,7 +37,7 @@ body {
 code, .mono { font-family: "JetBrains Mono", ui-monospace, Menlo, Consolas, monospace; font-size: 0.82em; }
 
 .page {
-  max-width: 810px;
+  max-width: 910px;
   margin: 0 auto;
   padding: 2rem 1.5rem 4rem;
 }
@@ -90,7 +90,7 @@ a:hover { color: var(--green); }
   letter-spacing: 0.15em;
   color: var(--green);
   text-shadow:
-    0 0 12px rgba(108, 224, 120, 0.45),
+    0 0 8px rgba(108, 224, 120, 0.25),
     0 0 4px var(--bg),
     0 0 4px var(--bg),
     0 0 4px var(--bg);
@@ -109,7 +109,11 @@ a:hover { color: var(--green); }
 .greeting {
   font-family: "JetBrains Mono", ui-monospace, monospace;
   color: var(--pink);
-  font-size: 0.95rem;
+  font-size: 0.88rem;
+  letter-spacing: 0.01em;
+  opacity: 0.95;
+  margin-top: 0.25rem;
+  margin-bottom: 1rem;
 }
 p { margin: 0.7rem 0; }
 b, strong { color: var(--green); font-weight: 700; }
@@ -147,17 +151,17 @@ blockquote::before {
 
 /* hatched divider */
 hr.hatched {
-  height: 10px;
+  height: 8px;
   border: none;
-  margin: 1.5rem 0;
+  margin: 1.75rem 0;
   background-image: repeating-linear-gradient(
     -45deg,
     var(--magenta) 0,
     var(--magenta) 1px,
     transparent 1px,
-    transparent 5px
+    transparent 6px
   );
-  opacity: 0.55;
+  opacity: 0.32;
 }
 
 /* timeline */
@@ -170,7 +174,8 @@ hr.hatched {
 .year-cell {
   font-family: "JetBrains Mono", ui-monospace, monospace;
   color: var(--green);
-  font-size: 1.4rem;
+  font-size: 1.2rem;
+  letter-spacing: 0.05em;
   writing-mode: vertical-rl;
   transform: rotate(180deg);
   text-align: center;
@@ -190,17 +195,26 @@ hr.hatched {
 
 .card {
   position: relative;
-  border: 1px solid var(--magenta);
-  padding: 0.7rem 0.85rem;
-  min-height: 90px;
+  border: 1px solid rgba(183, 101, 212, 0.55);
+  padding: 0.75rem 0.95rem;
+  min-height: 96px;
   overflow: hidden;
   text-decoration: none;
   color: inherit;
   display: flex;
   flex-direction: column;
   justify-content: flex-end;
+  transition: border-color 0.18s ease, transform 0.18s ease;
 }
-.card.featured { border-color: var(--orange); border-width: 1.5px; }
+.card:hover {
+  border-color: var(--magenta);
+  transform: translateY(-1px);
+}
+.card.featured {
+  border-color: rgba(245, 159, 58, 0.75);
+  border-width: 1.25px;
+}
+.card.featured:hover { border-color: var(--orange); }
 .card .card-bg {
   position: absolute; inset: 0; opacity: 0.55;
 }
