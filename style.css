@@ -37,7 +37,7 @@ body {
 code, .mono { font-family: "JetBrains Mono", ui-monospace, Menlo, Consolas, monospace; font-size: 0.82em; }
 
 .page {
-  max-width: 760px;
+  max-width: 810px;
   margin: 0 auto;
   padding: 2rem 1.5rem 4rem;
 }
