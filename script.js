@@ -22,6 +22,7 @@ function drawNetwork(canvas, opts = {}) {
     showWeights = false,
     padX = 24,
     padY = 18,
+    cellAspect = 1.2,             // horizontal:vertical ratio of one grid cell
     seed = Math.random() * 1e9,
   } = opts;
 
@@ -41,20 +42,39 @@ function drawNetwork(canvas, opts = {}) {
   ctx.fillStyle = bg;
   ctx.fillRect(0, 0, w, h);
 
-  // Layout: equally-spaced layers in X, nodes vertically centered
+  // Uniform-aspect layout: pick a single scale so layer spacing and node
+  // spacing keep the same ratio across every canvas. Network is centered
+  // and any leftover space becomes padding (no stretching).
   const innerW = Math.max(w - padX * 2, 1);
   const innerH = Math.max(h - padY * 2, 1);
+  const cols = layers.length;
+  const maxRows = Math.max(...layers);
+  const unitsX = Math.max(cols - 1, 1);
+  const unitsY = Math.max(maxRows - 1, 1);
+
+  const scaleByW = innerW / (unitsX * cellAspect);
+  const scaleByH = innerH / unitsY;
+  const scale = Math.min(scaleByW, scaleByH);
+  const dx = scale * cellAspect;
+  const dy = scale;
+
+  const netW = unitsX * dx;
+  const netH = unitsY * dy;
+  const offsetX = (w - netW) / 2;
+  const offsetY = (h - netH) / 2;
+
   const positions = layers.map((count, li) => {
-    const x = layers.length === 1 ? w / 2 : padX + (innerW * li) / (layers.length - 1);
-    const gap = innerH / (count + 1);
+    const x = offsetX + li * dx;
+    const colH = Math.max(count - 1, 0) * dy;
+    const colY0 = offsetY + (netH - colH) / 2;
     return Array.from({ length: count }, (_, i) => ({
       x,
-      y: padY + gap * (i + 1)
+      y: count === 1 ? offsetY + netH / 2 : colY0 + i * dy
     }));
   });
 
   // Edges (drawn first so nodes sit on top)
-  const nodeR = Math.max(2.2, Math.min(innerH / 18, 5.5));
+  const nodeR = Math.max(1.8, Math.min(scale * 0.18, 5.5));
   for (let li = 0; li < positions.length - 1; li++) {
     const A = positions[li];
     const B = positions[li + 1];
