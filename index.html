@@ -4,66 +4,13 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Kevin Georges</title>
-  <meta name="description" content="Kevin Georges — personal site." />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,700;1,400&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <div class="page">
-    <header class="topnav">
-      <div class="links">
-        <a href="#" class="active">home</a> /
-        <a href="#">posts</a> /
-        <a href="https://github.com/Kevin-Georges" target="_blank" rel="noopener">github</a> /
-        <a href="#" target="_blank" rel="noopener">linkedin</a>
-      </div>
-      <button id="theme-toggle">dark mode</button>
-    </header>
-
-    <div class="banner">
-      <canvas id="banner-canvas"></canvas>
-      <h1 class="banner-title">KEVIN&nbsp;&nbsp;GEORGES</h1>
-    </div>
-
-    <h2 class="section-title">Personal projects/blogs</h2>
-
-    <p class="greeting">Hi, my name is Kevin — welcome to my site!</p>
-
-    <p>I am a <b>software engineer</b> working on <b>web, systems, and the things in between</b>.</p>
-
-    <p>I am a self-taught engineer. I like <code class="c-pink">clean code</code>, <code class="c-cyan">tools</code>, and <code class="c-cyan">building&nbsp;things</code>.</p>
-
-    <hr class="hatched" />
-
-    <p>I got into programming as a kid who loved tinkering and breaking things to see how they worked.</p>
-
-    <p>The common thread between all my projects is <span class="c-red"><i>curiosity</i></span>.</p>
-
-    <p>After learning more about <code class="c-cyan">the&nbsp;web</code> (specifically <i>frontend &amp; tooling</i>), I discovered the second dimension of the craft — <b class="c-green">design</b> and <b class="c-green">user&nbsp;experience</b>.</p>
-
-    <blockquote>
-      I shipped <b>my first website</b> in <i>YYYY</i>, <a href="#">my first real project</a> in <i>YYYY</i>, and <a href="#">my first open-source contribution</a> in <i>YYYY</i>.
-    </blockquote>
-
-    <p>I'm scaling from small one-off scripts to seeing how we can reliably ship work that affects <code class="c-cyan">thousands</code> of users.</p>
-
-    <p>I am currently delving deeper into <code class="c-pink">TypeScript</code>, learning about more niche topics in <code class="c-pink">systems&nbsp;design</code>, and working on entirely new things with <b class="c-orange">side&nbsp;projects</b>.</p>
-
-    <hr class="hatched" />
-
-    <p class="muted">Over the years I've also played around with <a href="#">cryptography</a>, competitive programming, audio engineering, and some brief stints with hardware.</p>
-
-    <hr class="hatched" />
-
-    <div class="timeline" id="timeline"></div>
-
-    <hr class="hatched" />
-
-    <p class="footer">Inspired by the <a href="https://github.com/giosulipano" target="_blank" rel="noopener">not-much</a> theme.</p>
-  </div>
-
+  <div id="app"></div>
   <script src="script.js"></script>
 </body>
 </html>
